@@ -12,3 +12,5 @@ $ ->
       url: playUrl
       data: {new_mark: cell.data('cell')}
       type: 'POST'
+      success: (data) ->
+        console.log('update view with server play')
