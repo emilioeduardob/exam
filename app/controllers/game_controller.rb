@@ -8,4 +8,10 @@ class GameController < ApplicationController
     @game.play(params[:new_mark])
     render json: @game.status
   end
+
+  def cancelar
+    @game = Game.find_by_session_id(request.session_options[:id])
+    @game.cancelar
+    render json: @game.status
+  end
 end

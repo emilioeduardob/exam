@@ -1,6 +1,7 @@
 Exam::Application.routes.draw do
   get "game/index"
   post "game/play"
+  post "game/cancelar"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
