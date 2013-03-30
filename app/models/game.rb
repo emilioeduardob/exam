@@ -15,6 +15,7 @@ class Game < ActiveRecord::Base
   end
 
   def init_table
+    self.table = []
     self.table << [nil,nil,nil]
     self.table << [nil,nil,nil]
     self.table << [nil,nil,nil]
@@ -60,7 +61,6 @@ class Game < ActiveRecord::Base
   end
 
   def cancel
-    self.table = []
     init_table
   end
 
@@ -74,6 +74,9 @@ class Game < ActiveRecord::Base
 
   #check for diagonal wins
   def check_diagonal_win(symbol)
+    return true if self.table[0][0] == symbol && self.table[1][1] == symbol && self.table[2][2] == symbol
+    return true if self.table[0][2] == symbol && self.table[1][1] == symbol && self.table[2][0] == symbol
+    false
   end
 
   #check for vertical wins
