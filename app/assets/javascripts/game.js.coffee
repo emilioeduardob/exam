@@ -4,25 +4,46 @@
 
 $ ->
 
+  update_screen = (game_info) ->
+    draw_table(game_info.table)
+    set_game_status(game_info)
+
+  set_game_status = (game_info) ->
+    status = $('#game_status')
+    if game_info.winner
+      status.html(game_info.winner) 
+    else
+      status.html('')
+
+
 
   draw_table = (table_info) ->
     table = $('table#tictac')
+    for row in [0..2] by 1
+      for column in [0..2] by 1
+        new_value = table_info[row][column]
+        new_value = "?" if new_value == null
+        $("#cell#{row}#{column}").html( new_value )
 
 
+  $('#cancelar').click (e) ->
+    e.preventDefault()
 
-  $('#cancelar').click ->
-    console.log('redibujar')
+    cancelUrl = $(this).attr('href')
+    $.ajax
+      url: cancelUrl
+      type: 'POST'
+      success: (data) ->
+        update_screen(data)
+
 
   $('table#tictac td').click ->
     cell = $(this)
     playUrl = $('table#tictac').data('playurl')
-    console.log('clicked '  + cell.data('cell'))
 
     $.ajax
       url: playUrl
       data: {new_mark: cell.data('cell')}
       type: 'POST'
       success: (data) ->
-        cell.html('X')
-        console.log('update view with server play')
-        draw_table(data.table)
+        update_screen(data)

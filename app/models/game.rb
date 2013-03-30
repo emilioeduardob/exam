@@ -1,19 +1,17 @@
 class Game < ActiveRecord::Base
   attr_accessible :session_id, :table
   serialize :table, Array
+  attr_accessor :winner
 
   USER_SYMBOL = 'X'
+  SERVER_SYMBOL = 'O'
 
   #returns game status
   def status
     {
-      winner: self.get_winner,
+      winner: @winner,
       table: self.table
     }
-  end
-
-  #returns nil if no winner or word DRAW
-  def get_winner
   end
 
   def init_table
@@ -30,8 +28,14 @@ class Game < ActiveRecord::Base
     indices = new_mark.split(',').map{|i| i.to_i}
 
     self.table[indices.first][indices.last] = 'X'
-    #let server play
-    server_play
+
+    if user_won?
+      @winner = "Usuario gano"
+    else
+      #let server play
+      server_play
+      @winner = "Server gano" if server_won?
+    end
     self.save!
   end
 
@@ -55,8 +59,13 @@ class Game < ActiveRecord::Base
     false
   end
 
-  def cancelar
+  def cancel
     self.table = []
+    init_table
+  end
+
+  def server_won?
+    check_diagonal_win(SERVER_SYMBOL) || check_vertical_win(SERVER_SYMBOL) || check_horizontal_win(SERVER_SYMBOL)
   end
 
   def user_won?
@@ -69,9 +78,17 @@ class Game < ActiveRecord::Base
 
   #check for vertical wins
   def check_vertical_win(symbol)
+    0.upto(2).each do |column|
+      return true if self.table[0][column] == symbol && self.table[1][column] == symbol && self.table[2][column] == symbol
+    end
+    false
   end
 
   #check for horizontal wins
   def check_horizontal_win(symbol)
+    self.table.each do |row|
+      return true if row[0] == symbol && row[1] == symbol && row[2] == symbol
+    end
+    false
   end
 end
