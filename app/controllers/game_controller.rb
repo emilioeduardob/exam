@@ -11,7 +11,7 @@ class GameController < ApplicationController
 
   def cancelar
     @game = Game.find_by_session_id(request.session_options[:id])
-    @game.cancelar
+    @game.cancel
     render json: @game.status
   end
 end
